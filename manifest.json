@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "// TODO: Chrome extension title",
+  "version": "1.0",
+  "description": "// TODO: a description about a Chrome extension that scans your GitHub pull request for remaining TODOs.",
+  "permissions": [
+    "activeTab"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://github.com/*/pull/*/files*"],
+      "js": ["content.js"]
+    }
+  ]
+}
