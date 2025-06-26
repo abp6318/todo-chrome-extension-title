@@ -14,41 +14,42 @@ function renderTable() {
   // get the file container element made by GitHub
   const fileContainer = document.querySelector('#files');
   if (!fileContainer) {
-    console.error('File container not found');
     return;
   }
 
   // create a new contianer element to add the TODOs to within the file container
-  const existingTodoListElement = document.querySelector('#todo-list');
-  if (existingTodoListElement) {
-    existingTodoListElement.innerHTML = '';
+  const existingTodoListContainerElement = document.querySelector('.todo-container');
+  if (existingTodoListContainerElement) {
+    existingTodoListContainerElement.innerHTML = '';
   } else {
-    const newTodoListElement = document.createElement('div');
-    newTodoListElement.id = 'todo-list';
-    fileContainer.prepend(newTodoListElement);
+    const newTodoListContainerElement = document.createElement('div');
+    newTodoListContainerElement.className = 'todo-container';
+    fileContainer.prepend(newTodoListContainerElement);
   }
 
-  const todoListElement = document.querySelector('#todo-list');
-  const tableElement = document.createElement('calcite-table');
-  tableElement.setAttribute('striped', 'true');
-  tableElement.setAttribute('page-size', '5');
-  renderTableRows(tableElement);
-  todoListElement.appendChild(tableElement);
+  const todoListContainerElement = document.querySelector('.todo-container');
+  const tableElement = createTodoTable();
+  todoListContainerElement.appendChild(tableElement);
 }
 
-function renderTableRows(tableElement) {
+function createTodoTable() {
+  // create the table element
+  const tableElement = document.createElement('calcite-table');
+  tableElement.className = 'todo-table';
+
   // create the header row
-  // const headerRow = document.createElement('calcite-table-row');
-  // headerRow.innerHTML = `
-  //   <calcite-table-header heading="Status"></calcite-table-header>
-  //   <calcite-table-header heading="File name"></calcite-table-header>
-  //   <calcite-table-header heading="Line number"></calcite-table-header>
-  // `;
+  const headerRow = document.createElement('tr');
+  headerRow.className = 'todo-tr';
+  headerRow.innerHTML = `
+    <th class="todo-th">TODO Status</th>
+    <th class="todo-th">File name</th>
+    <th class="todo-th">Line number</th>
+  `;
+  tableElement.appendChild(headerRow);
   Array.from(document.querySelectorAll('tr'))
     .filter(row => {
       if (row.innerText.toLowerCase().includes('todo')){
-        const tableRowElement = document.createElement('tr');
-        tableRowElement.className = 'todo-item';
+        // break down the row's information into an object
         const rowInformation = {
           oldLineNumber: row.children[0].getAttribute('data-line-number'),
           existsInOld: row.children[1].innerText.toLowerCase().includes('todo'),
@@ -71,13 +72,18 @@ function renderTableRows(tableElement) {
           rowInformation.tdText = 'New line ' + rowInformation.newLineNumber;
           rowInformation.anchor = row.children[2].id;
         }
+
+        // create the table row element and populate it with the information
+        const tableRowElement = document.createElement('tr');
+        tableRowElement.className = 'todo-tr';
         tableRowElement.innerHTML = `
-          <td>${rowInformation.status}</td>
-          <td><a href="#${rowInformation.anchor}">${rowInformation.shortFileName}</a></td>
-          <td>${rowInformation.tdText}</td>
+          <td class="todo-td">${rowInformation.status}</td>
+          <td class="todo-td"><a href="#${rowInformation.anchor}">${rowInformation.shortFileName}</a></td>
+          <td class="todo-td">${rowInformation.tdText}</td>
         `;
 
         tableElement.appendChild(tableRowElement);
       }
     });
+  return tableElement;
 }
